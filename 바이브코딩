@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중3 정보 - 알고리즘 정렬 시뮬레이터</title>
+    <!-- Tailwind CSS for rich modern UI styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter & Nanum Gothic -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons for beautiful dashboard icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Nanum Gothic', sans-serif;
+        }
+        /* Custom scrollbar for beautiful elements */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-blue-600 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-white/10 rounded-xl">
+                    <i data-lucide="bar-chart-2" class="w-8 h-8 text-amber-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">💡 중3 정보: 알고리즘과 문제 해결</h1>
+                    <p class="text-xs sm:text-sm text-indigo-100 mt-0.5">선택·삽입·버블 정렬 과정을 실시간으로 눈과 귀로 탐구하는 시뮬레이터</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-indigo-800/50 px-4 py-2 rounded-lg border border-indigo-400/20 text-xs sm:text-sm">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>
+                실시간 학습용 데이터 시뮬레이션 작동 중
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Controls (4 cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            <!-- Algorithm Selection Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-100">
+                    <i data-lucide="layers" class="w-5 h-5 text-indigo-600"></i>
+                    <h2 class="font-bold text-lg text-slate-950">정렬 알고리즘 선택</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-2">
+                    <!-- Selection Sort Card Button -->
+                    <label class="relative flex flex-col p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition focus-within:ring-2 focus-within:ring-indigo-500 border-indigo-600 bg-indigo-50/40" id="label-selection">
+                        <input type="radio" name="algorithm" value="selection" class="sr-only" checked onchange="changeAlgorithm('selection')">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-indigo-950 text-base">선택 정렬 (Selection Sort)</span>
+                            <span class="text-[10px] px-2 py-0.5 bg-indigo-200 text-indigo-800 font-semibold rounded-full uppercase">최소값 선택</span>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            가장 작은 값을 차례대로 찾아내어 맨 앞의 데이터와 위치를 바꾸며 정렬합니다.
+                        </p>
+                    </label>
+
+                    <!-- Insertion Sort Card Button -->
+                    <label class="relative flex flex-col p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition focus-within:ring-2 focus-within:ring-indigo-500 border-slate-200 bg-white" id="label-insertion">
+                        <input type="radio" name="algorithm" value="insertion" class="sr-only" onchange="changeAlgorithm('insertion')">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-indigo-950 text-base">삽입 정렬 (Insertion Sort)</span>
+                            <span class="text-[10px] px-2 py-0.5 bg-amber-200 text-amber-800 font-semibold rounded-full uppercase">알맞은 자리 찾기</span>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            두 번째 자료부터 이미 정렬된 부분의 알맞은 위치를 찾아 차례대로 끼워 넣어 정렬합니다.
+                        </p>
+                    </label>
+
+                    <!-- Bubble Sort Card Button -->
+                    <label class="relative flex flex-col p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition focus-within:ring-2 focus-within:ring-indigo-500 border-slate-200 bg-white" id="label-bubble">
+                        <input type="radio" name="algorithm" value="bubble" class="sr-only" onchange="changeAlgorithm('bubble')">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-indigo-950 text-base">버블 정렬 (Bubble Sort)</span>
+                            <span class="text-[10px] px-2 py-0.5 bg-rose-200 text-rose-800 font-semibold rounded-full uppercase">옆자리와 비교</span>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            이웃한 두 데이터의 크기를 비교하여 순서가 다르면 위치를 서로 바꾸는 동작을 반복합니다.
+                        </p>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Configuration Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-4">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                        <h2 class="font-bold text-lg text-slate-950">설정 조절</h2>
+                    </div>
+                    <!-- Sound Toggle -->
+                    <button onclick="toggleSound()" id="sound-btn" class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition">
+                        <i data-lucide="volume-2" class="w-4 h-4" id="sound-icon"></i>
+                        <span id="sound-text">소리 켜짐</span>
+                    </button>
+                </div>
+
+                <!-- Array Size Slider -->
+                <div class="flex flex-col gap-1.5">
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-600">
+                        <label for="size-slider">막대 개수 (배열 크기)</label>
+                        <span id="size-val" class="bg-slate-100 px-2 py-0.5 rounded text-indigo-600 font-bold">15개</span>
+                    </div>
+                    <input type="range" id="size-slider" min="5" max="40" value="15" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateArraySize(this.value)">
+                    <p class="text-[10px] text-slate-400">수업 진행 시에는 10~20개가 관찰하기 편리해요.</p>
+                </div>
+
+                <!-- Speed Slider -->
+                <div class="flex flex-col gap-1.5">
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-600">
+                        <label for="speed-slider">애니메이션 속도</label>
+                        <span id="speed-val" class="bg-slate-100 px-2 py-0.5 rounded text-indigo-600 font-bold">보통</span>
+                    </div>
+                    <input type="range" id="speed-slider" min="20" max="1000" step="20" value="300" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" oninput="updateSpeed(this.value)">
+                    <div class="flex justify-between text-[10px] text-slate-400 px-1">
+                        <span>아주 느리게 (1초)</span>
+                        <span>실시간 (0.02초)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Visualizer & Stats (8 cols) -->
+        <section class="lg:col-span-8 flex flex-col gap-6">
+            
+            <!-- Real-time Status Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col gap-5">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-indigo-600 animate-ping"></div>
+                        <h2 class="font-bold text-lg text-slate-950">시뮬레이션 캔버스</h2>
+                    </div>
+                    
+                    <!-- Legend Color Explanations -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs">
+                        <span class="flex items-center gap-1.5 text-slate-600">
+                            <span class="w-3.5 h-3.5 bg-indigo-500 rounded"></span> 정렬 대기
+                        </span>
+                        <span class="flex items-center gap-1.5 text-slate-600">
+                            <span class="w-3.5 h-3.5 bg-rose-500 rounded"></span> 비교 중
+                        </span>
+                        <span class="flex items-center gap-1.5 text-slate-600">
+                            <span class="w-3.5 h-3.5 bg-amber-400 rounded"></span> 최솟값/키 카드
+                        </span>
+                        <span class="flex items-center gap-1.5 text-slate-600">
+                            <span class="w-3.5 h-3.5 bg-emerald-500 rounded"></span> 정렬 완료
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Visualization Box -->
+                <div class="bg-slate-900 rounded-2xl p-6 h-72 flex items-end justify-between relative shadow-inner overflow-hidden border border-slate-800">
+                    <!-- The generated bars container -->
+                    <div id="bars-container" class="w-full h-full flex items-end justify-between gap-1 sm:gap-2 pt-8">
+                        <!-- Dynamically populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Controller Buttons -->
+                <div class="flex flex-wrap items-center justify-between gap-4 py-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Play/Pause Button -->
+                        <button onclick="togglePlay()" id="play-btn" class="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-200 transition active:scale-95">
+                            <i data-lucide="play" class="w-5 h-5" id="play-icon"></i>
+                            <span id="play-btn-text">자동 실행</span>
+                        </button>
+                        
+                        <!-- Step Forward Button -->
+                        <button onclick="stepForward()" id="step-btn" class="flex items-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl border border-slate-200 transition active:scale-95">
+                            <i data-lucide="skip-forward" class="w-5 h-5"></i>
+                            <span>한 단계씩</span>
+                        </button>
+
+                        <!-- Restart/Reset Button -->
+                        <button onclick="resetSimulation()" class="flex items-center gap-1.5 px-4 py-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl border border-slate-200 transition active:scale-95" title="동일한 무작위 카드 상태에서 처음부터 다시">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>처음부터 다시</span>
+                        </button>
+                    </div>
+
+                    <!-- New Array Button -->
+                    <button onclick="createNewArray()" class="flex items-center gap-1.5 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-md shadow-amber-100 transition active:scale-95">
+                        <i data-lucide="shuffle" class="w-4 h-4"></i>
+                        <span>무작위 카드 섞기</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Dashboard Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Comparisons Stat Card -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-xs font-semibold text-slate-500">실시간 비교 횟수</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span id="stat-comparisons" class="text-3xl font-extrabold text-indigo-600 transition-all">0</span>
+                            <span class="text-xs text-slate-400">번</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                        <i data-lucide="eye" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <!-- Swaps/Shifts Stat Card -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-xs font-semibold text-slate-500">실시간 교환/이동 횟수</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span id="stat-swaps" class="text-3xl font-extrabold text-amber-500 transition-all">0</span>
+                            <span class="text-xs text-slate-400">번</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-amber-50 text-amber-500 rounded-xl">
+                        <i data-lucide="move" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <!-- Algorithm Efficiency Info -->
+                <div class="bg-indigo-900 text-indigo-100 p-5 rounded-2xl shadow-sm border border-indigo-800 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-indigo-300">시간 복잡도</span>
+                            <h3 class="text-xl font-extrabold text-white mt-0.5" id="complexity-txt">O(N²)</h3>
+                        </div>
+                        <span class="px-2 py-0.5 bg-indigo-800/80 text-indigo-200 text-[10px] rounded border border-indigo-700" id="complexity-badge">평균 연산형</span>
+                    </div>
+                    <p class="text-[11px] text-indigo-200 mt-2 leading-relaxed" id="complexity-desc">
+                        데이터가 2배가 되면 정렬 시간은 약 4배가 필요해집니다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Narrative Commentary Box -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-start">
+                <div class="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl shadow-md flex-shrink-0 animate-bounce">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                </div>
+                <div class="flex-grow">
+                    <h4 class="text-sm font-bold text-slate-900 mb-0.5">수업 도우미 가이드봇</h4>
+                    <p id="narrative-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                        아래 [자동 실행] 또는 [한 단계씩] 버튼을 눌러 정렬을 시작해보세요! 막대의 움직임과 설명이 실시간 매칭됩니다.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Bottom Educational & Discussion Section -->
+    <section class="bg-slate-100 border-t border-slate-200 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
+            
+            <!-- Pedagogical Table Comparing Algorithms -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h3 class="font-bold text-lg text-slate-950 mb-4 flex items-center gap-2">
+                    <i data-lucide="info" class="w-5 h-5 text-indigo-600"></i>
+                    오늘 배우는 3대 정렬 알고리즘 핵심 요약
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-semibold">
+                                <th class="p-3">알고리즘</th>
+                                <th class="p-3">핵심 행동 원리</th>
+                                <th class="p-3">현실 실생활 비유</th>
+                                <th class="p-3 text-center">장점 및 단점</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700">
+                            <tr>
+                                <td class="p-3 font-bold text-indigo-950 whitespace-nowrap">선택 정렬</td>
+                                <td class="p-3">현재 자리 이후에서 최솟값을 "선택"해 가져온다.</td>
+                                <td class="p-3">바닥의 흩어진 책들 중 가장 얇은 책을 골라 위로 쌓기</td>
+                                <td class="p-3 text-center">
+                                    <span class="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs mr-1 font-semibold">자료 이동 적음</span>
+                                    <span class="inline-block px-2 py-0.5 bg-rose-50 text-rose-700 rounded text-xs font-semibold">언제나 느림</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-indigo-950 whitespace-nowrap">삽입 정렬</td>
+                                <td class="p-3">앞부분의 이미 정렬된 공간의 "알맞은 틈"에 집어넣는다.</td>
+                                <td class="p-3">트럼프 카드 게임을 할 때 카드를 순서대로 틈에 끼우기</td>
+                                <td class="p-3 text-center">
+                                    <span class="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs mr-1 font-semibold">이미 정렬 시 초고속</span>
+                                    <span class="inline-block px-2 py-0.5 bg-rose-50 text-rose-700 rounded text-xs font-semibold">자료를 계속 밀어야 함</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold text-indigo-950 whitespace-nowrap">버블 정렬</td>
+                                <td class="p-3">바로 "이웃한 두 자료"를 대조하여 엎치락뒤치락 밀어낸다.</td>
+                                <td class="p-3">키가 무작위인 학생들이 옆 사람과 대조하며 자리 바꾸기</td>
+                                <td class="p-3 text-center">
+                                    <span class="inline-block px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs mr-1 font-semibold">원리가 단순함</span>
+                                    <span class="inline-block px-2 py-0.5 bg-rose-50 text-rose-700 rounded text-xs font-semibold">가장 많은 연산</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Thinking and Discussion Questions (2 Questions requested) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Question 1 -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-lg">탐구 질문 1</span>
+                            <span class="text-xs font-semibold text-indigo-600">시간 복잡도와 최선의 경우</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3 leading-relaxed">
+                            💡 무작위로 섞여 있을 때와 이미 '오름차순'으로 완벽히 정렬되어 있을 때, 정렬 속도나 비교/교환 횟수에 어떤 차이가 생길까요? 세 알고리즘의 동작 모습을 비교해보고 토의해 봅시다.
+                        </h4>
+                    </div>
+                    <div class="mt-4">
+                        <details class="group cursor-pointer">
+                            <summary class="list-none flex items-center justify-between text-xs font-bold text-indigo-700 select-none">
+                                <span>정답 및 탐구 힌트 열어보기</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2 p-3 bg-white rounded-lg border border-indigo-100/50">
+                                <strong>해설:</strong> 
+                                <strong>삽입 정렬</strong>은 이미 정렬되어 있다면 비교만 한 번씩 쑥 하고 자리를 바꾸는 일이 없어 매우 빠르게 끝납니다. 반면, <strong>선택 정렬</strong>은 데이터가 이미 정렬되어 있어도 최솟값이 맞는지 계속 검증해야 하므로 비교 횟수가 달라지지 않습니다. 이처럼 이미 좋은 조건일 때(Best Case) 극적인 속도 향상을 보여주는 알고리즘 설계의 묘미를 관찰할 수 있습니다.
+                            </p>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded-lg">탐구 질문 2</span>
+                            <span class="text-xs font-semibold text-indigo-600">컴퓨팅 사고와 실생활 연결</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-3 leading-relaxed">
+                            💡 실생활에서 물건을 정렬해야 할 때(예: 책꽂이에 새 책 꽂기, 카드 게임 시 들고 있는 패 정리하기), 여러분은 어떤 정렬 알고리즘의 방식과 가장 비슷하게 행동하나요? 그 이유는 무엇일까요?
+                        </h4>
+                    </div>
+                    <div class="mt-4">
+                        <details class="group cursor-pointer">
+                            <summary class="list-none flex items-center justify-between text-xs font-bold text-indigo-700 select-none">
+                                <span>정답 및 탐구 힌트 열어보기</span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2 p-3 bg-white rounded-lg border border-indigo-100/50">
+                                <strong>해설:</strong> 
+                                대다수의 인간은 손가락 사이에 새로운 카드가 들어왔을 때, 앞의 정렬된 부분의 알맞은 경계지점을 눈으로 찾아 바로 꽂아 넣는 <strong>삽입 정렬(Insertion Sort)</strong>의 방식을 선호합니다! 
+                                반면에 흩어진 무작위 카드를 바닥에 모두 내려놓은 뒤 매의 눈으로 하나씩 최솟값을 발견해 따로 모으는 방식은 <strong>선택 정렬(Selection Sort)</strong>과 흡사합니다. 이렇듯 우리가 평소에 직관적으로 생각하고 해결하던 방법들이 이미 훌륭한 알고리즘 기법으로 정립되어 있다는 사실을 배울 수 있습니다.
+                            </p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer Credit -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs">
+        <p>© 2026 중학교 3학년 정보 교과과정 지원 시뮬레이터. Created for Interactive Informatics Learning.</p>
+    </footer>
+
+    <script>
+        // --- Global State Variables ---
+        let originalArray = [];       // Saves the shuffled layout to allow "Reset to beginning"
+        let currentArray = [];        // Actively modified array
+        let arraySize = 15;           // Number of bars
+        let currentAlgorithm = 'selection';
+        let stepGenerator = null;     // Pointer to Generator object of active sort
+        let isPlaying = false;        // Playing state
+        let playInterval = null;      // Holds the interval instance
+        let speed = 300;              // Interval timer in ms
+        
+        // Counter stats
+        let comparisonCount = 0;
+        let swapCount = 0;
+        
+        // Visual indicator variables
+        let activeIndices = [];       // Indices currently being compared or swapped
+        let selectionMinIndex = -1;   // Pointer for min index in Selection Sort
+        let insertionKeyIndex = -1;   // Pointer for key index in Insertion Sort
+        let sortedSet = new Set();    // Set of finalized indices
+
+        // Web Audio API engine for interactive sound feedback
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        // On window load initialization
+        window.onload = function() {
+            lucide.createIcons();
+            createNewArray();
+        };
+
+        // --- Core Audio Synthesizer ---
+        function playTone(val, maxVal) {
+            if (!soundEnabled) return;
+            try {
+                // Initialize context on user interaction
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                // Frequency mapped logarithmically or linearly based on element height (200Hz - 1000Hz)
+                let freq = 180 + (val / maxVal) * 820;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                osc.type = 'triangle'; // Smooth, retro bell tone
+
+                // Quick satisfying sound envelope
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.12);
+            } catch (e) {
+                console.warn("Audio Context error ignored:", e);
+            }
+        }
+
+        // Complete fanfare tone sequence upon successful completion
+        function playCompleteFanfare() {
+            if (!soundEnabled) return;
+            const arpeggio = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+            arpeggio.forEach((f, index) => {
+                setTimeout(() => {
+                    try {
+                        let osc = audioCtx.createOscillator();
+                        let gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.3);
+                    } catch(err) {}
+                }, index * 75);
+            });
+        }
+
+        // Toggle sound state
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const soundBtn = document.getElementById('sound-btn');
+            const soundIcon = document.getElementById('sound-icon');
+            const soundText = document.getElementById('sound-text');
+            
+            if (soundEnabled) {
+                soundBtn.className = "flex items-center gap-1.5 px-3 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-semibold rounded-lg text-xs transition";
+                soundIcon.setAttribute('data-lucide', 'volume-2');
+                soundText.innerText = "소리 켜짐";
+            } else {
+                soundBtn.className = "flex items-center gap-1.5 px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-500 font-semibold rounded-lg text-xs transition";
+                soundIcon.setAttribute('data-lucide', 'volume-x');
+                soundText.innerText = "소리 꺼짐";
+            }
+            lucide.createIcons();
+        }
+
+        // --- STREAMING_CHUNK:Implementing the sorting generator algorithms... ---
+        
+        // 1. Bubble Sort Generator State Engine
+        function* bubbleSortGenerator(arr) {
+            let n = arr.length;
+            let localArr = [...arr];
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    // Step: Highlight comparison
+                    yield {
+                        type: 'compare',
+                        indices: [j, j + 1],
+                        arr: [...localArr],
+                        desc: `이웃한 두 자료 [${j+1}번째 칸: ${localArr[j]}]와 [${j+2}번째 칸: ${localArr[j+1]}]을 대조합니다.`
+                    };
+                    
+                    if (localArr[j] > localArr[j+1]) {
+                        // Swap occurred
+                        let temp = localArr[j];
+                        localArr[j] = localArr[j+1];
+                        localArr[j+1] = temp;
+                        
+                        yield {
+                            type: 'swap',
+                            indices: [j, j + 1],
+                            arr: [...localArr],
+                            desc: `앞 칸의 값(${localArr[j+1]})이 더 크므로 두 값의 자리를 교환합니다!`
+                        };
+                    } else {
+                        yield {
+                            type: 'no-swap',
+                            indices: [j, j + 1],
+                            arr: [...localArr],
+                            desc: `앞 칸의 값이 정렬 원리에 부합하므로 자리를 바꾸지 않고 유지합니다.`
+                        };
+                    }
+                }
+                // Yield state to signify that the last element of this run is finalized/sorted
+                yield {
+                    type: 'sorted',
+                    index: n - i - 1,
+                    arr: [...localArr],
+                    desc: `${n - i}번째로 큰 값(${localArr[n-i-1]})이 맨 뒤로 이동하여 정렬 완료되었습니다!`
+                };
+            }
+            // First index is sorted by default when remaining elements are done
+            yield {
+                type: 'sorted',
+                index: 0,
+                arr: [...localArr],
+                desc: `모든 비교가 안전하게 끝났습니다! 전체 카드가 정렬되었습니다.`
+            };
+        }
+
+        // 2. Selection Sort Generator State Engine
+        function* selectionSortGenerator(arr) {
+            let n = arr.length;
+            let localArr = [...arr];
+            for (let i = 0; i < n - 1; i++) {
+                let minIdx = i;
+                yield {
+                    type: 'mark-min',
+                    index: minIdx,
+                    arr: [...localArr],
+                    desc: `${i + 1}번째 빈 자리의 정렬을 위해 최초 지정값 [${i+1}번째 칸: ${localArr[i]}]을 최소치로 기록합니다.`
+                };
+                
+                for (let j = i + 1; j < n; j++) {
+                    yield {
+                        type: 'compare',
+                        indices: [minIdx, j],
+                        arr: [...localArr],
+                        desc: `현재 탐색된 최솟값(${localArr[minIdx]})과 [${j+1}번째 칸의 값: ${localArr[j]}]을 서로 대조합니다.`
+                    };
+                    
+                    if (localArr[j] < localArr[minIdx]) {
+                        minIdx = j;
+                        yield {
+                            type: 'new-min',
+                            index: minIdx,
+                            arr: [...localArr],
+                            desc: `새롭게 더 작고 아담한 값(${localArr[minIdx]})을 발견하여 가리키는 손가락을 이동합니다!`
+                        };
+                    }
+                }
+                
+                if (minIdx !== i) {
+                    let temp = localArr[i];
+                    localArr[i] = localArr[minIdx];
+                    localArr[minIdx] = temp;
+                    yield {
+                        type: 'swap',
+                        indices: [i, minIdx],
+                        arr: [...localArr],
+                        desc: `결정된 최솟값(${localArr[i]})을 최종 타겟인 ${i+1}번째 자리(${localArr[minIdx]})와 전격 교환합니다.`
+                    };
+                } else {
+                    yield {
+                        type: 'no-swap',
+                        indices: [i],
+                        arr: [...localArr],
+                        desc: `검토한 결과, 본래 지정 자리의 값(${localArr[i]})이 이미 가장 작으므로 현 위치를 유지합니다.`
+                    };
+                }
+                
+                yield {
+                    type: 'sorted',
+                    index: i,
+                    arr: [...localArr],
+                    desc: `${i + 1}번째 자리까지 오름차순 정렬 배치가 완료되었습니다.`
+                };
+            }
+            // Final index is auto sorted
+            yield {
+                type: 'sorted',
+                index: n - 1,
+                arr: [...localArr],
+                desc: `자동으로 맨 마지막 칸 정렬 및 시뮬레이션을 마무리합니다!`
+            };
+        }
+
+        // 3. Insertion Sort Generator State Engine
+        function* insertionSortGenerator(arr) {
+            let n = arr.length;
+            let localArr = [...arr];
+            
+            yield {
+                type: 'sorted',
+                index: 0,
+                arr: [...localArr],
+                desc: `맨 앞의 첫 번째 카드(${localArr[0]})는 단독으로 존재하여 이미 정렬상태인 것으로 취급합니다.`
+            };
+            
+            for (let i = 1; i < n; i++) {
+                let key = localArr[i];
+                let j = i - 1;
+                
+                yield {
+                    type: 'pick-key',
+                    index: i,
+                    val: key,
+                    arr: [...localArr],
+                    desc: `비교 대상이 될 ${i+1}번째 카드 [값: ${key}]를 들고 적합한 삽입의 틈새를 찾아 나섭니다.`
+                };
+                
+                while (j >= 0) {
+                    yield {
+                        type: 'compare',
+                        indices: [j, j + 1],
+                        arr: [...localArr],
+                        desc: `이미 정렬 완료한 구역의 [${j+1}번째 자리: ${localArr[j]}]와 현재 들고 있는 키 카드(${key})의 크기를 대조합니다.`
+                    };
+                    
+                    if (localArr[j] > key) {
+                        localArr[j + 1] = localArr[j];
+                        yield {
+                            type: 'shift',
+                            index: j + 1,
+                            indices: [j, j + 1],
+                            arr: [...localArr],
+                            desc: `정렬 부위의 값(${localArr[j]})이 들고 있는 카드(${key})보다 크므로 한 칸 우측으로 밀어냅니다.`
+                        };
+                        j--;
+                    } else {
+                        break;
+                    }
+                }
+                
+                localArr[j + 1] = key;
+                yield {
+                    type: 'insert',
+                    index: j + 1,
+                    arr: [...localArr],
+                    desc: `밀려나 비어 있는 알맞은 틈새인 ${j + 2}번째 자리에 손쉽게 끼워 넣습니다.`
+                };
+            }
+            
+            // Mark entire elements sorted
+            for (let k = 0; k < n; k++) {
+                yield {
+                    type: 'sorted',
+                    index: k,
+                    arr: [...localArr],
+                    desc: `삽입 프로세스가 완전히 정밀하게 종료되었습니다!`
+                };
+            }
+        }
+
+        // --- STREAMING_CHUNK:Implementing control actions and state mutations ---
+
+        // Generates completely new array random configuration
+        function createNewArray() {
+            pauseSimulation();
+            comparisonCount = 0;
+            swapCount = 0;
+            sortedSet.clear();
+            activeIndices = [];
+            selectionMinIndex = -1;
+            insertionKeyIndex = -1;
+            
+            originalArray = [];
+            for (let i = 0; i < arraySize; i++) {
+                // Creates random unique numbers between 12 and 100 for proper educational vertical height
+                const val = Math.floor(Math.random() * 85) + 15;
+                originalArray.push(val);
+            }
+            
+            currentArray = [...originalArray];
+            stepGenerator = null; // Forces new generator initialization next time
+            updateCounters();
+            updateDescription("무작위 새로운 카드 묶음이 마련되었습니다. 시작하기 위해 정렬 버튼을 눌러주세요.");
+            renderBars();
+        }
+
+        // Resets the exact same shuffled layout to step 0
+        function resetSimulation() {
+            pauseSimulation();
+            comparisonCount = 0;
+            swapCount = 0;
+            sortedSet.clear();
+            activeIndices = [];
+            selectionMinIndex = -1;
+            insertionKeyIndex = -1;
+            
+            currentArray = [...originalArray];
+            stepGenerator = null;
+            updateCounters();
+            updateDescription("처음 원상태의 무작위 배열로 돌아왔습니다. 다시 한 번 비교를 탐색해보세요!");
+            renderBars();
+        }
+
+        // Speed state update
+        function updateSpeed(val) {
+            speed = parseInt(val);
+            
+            const speedValText = document.getElementById('speed-val');
+            if (speed <= 100) {
+                speedValText.innerText = "초고속";
+            } else if (speed <= 300) {
+                speedValText.innerText = "빠름";
+            } else if (speed <= 600) {
+                speedValText.innerText = "보통";
+            } else {
+                speedValText.innerText = "느리게";
+            }
+
+            // Real-time update to active loop interval if already playing
+            if (isPlaying) {
+                clearInterval(playInterval);
+                playInterval = setInterval(stepForward, speed);
+            }
+        }
+
+        // Array Size state update
+        function updateArraySize(val) {
+            arraySize = parseInt(val);
+            document.getElementById('size-val').innerText = `${arraySize}개`;
+            createNewArray();
+        }
+
+        // Changes active sorting algorithm structure
+        function changeAlgorithm(alg) {
+            currentAlgorithm = alg;
+            
+            // Adjust card styling borders dynamically
+            ['selection', 'insertion', 'bubble'].forEach(item => {
+                const card = document.getElementById(`label-${item}`);
+                if (item === alg) {
+                    card.className = "relative flex flex-col p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition focus-within:ring-2 focus-within:ring-indigo-500 border-indigo-600 bg-indigo-50/40";
+                } else {
+                    card.className = "relative flex flex-col p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition focus-within:ring-2 focus-within:ring-indigo-500 border-slate-200 bg-white";
+                }
+            });
+
+            // Adjust complexity labels and badges in real-time
+            const complexityTxt = document.getElementById('complexity-txt');
+            const complexityBadge = document.getElementById('complexity-badge');
+            const complexityDesc = document.getElementById('complexity-desc');
+
+            if (alg === 'selection') {
+                complexityTxt.innerText = "O(N²)";
+                complexityBadge.innerText = "수치 검색 고정";
+                complexityDesc.innerText = "데이터의 정렬 상태와 무관하게 모든 칸을 항시 똑같이 검증하므로 늘 규칙적인 속도가 걸려요.";
+            } else if (alg === 'insertion') {
+                complexityTxt.innerText = "O(N) ~ O(N²)";
+                complexityBadge.innerText = "가변형 최우수";
+                complexityDesc.innerText = "운 좋게 정렬이 완료된 데이터라면 거의 비교 없이 통과하므로 때로는 상상 초월로 빨라집니다.";
+            } else if (alg === 'bubble') {
+                complexityTxt.innerText = "O(N²)";
+                complexityBadge.innerText = "느린 편의 표본";
+                complexityDesc.innerText = "바로 이웃한 값끼리 계속해서 끊임없이 자리를 바꾸므로 가장 많은 횟수의 연산 교환이 발생해요.";
+            }
+
+            resetSimulation();
+        }
+
+        // Initialize generator object based on current selected sort
+        function initGenerator() {
+            if (currentAlgorithm === 'bubble') {
+                stepGenerator = bubbleSortGenerator(currentArray);
+            } else if (currentAlgorithm === 'selection') {
+                stepGenerator = selectionSortGenerator(currentArray);
+            } else if (currentAlgorithm === 'insertion') {
+                stepGenerator = insertionSortGenerator(currentArray);
+            }
+        }
+
+        // --- STREAMING_CHUNK:Running the step forward visual processor ---
+        
+        // Single unit processing step
+        function stepForward() {
+            if (!stepGenerator) {
+                initGenerator();
+            }
+
+            const stepResult = stepGenerator.next();
+            
+            if (stepResult.done) {
+                // Final completion state
+                pauseSimulation();
+                sortedSet.clear();
+                for (let i = 0; i < currentArray.length; i++) {
+                    sortedSet.add(i);
+                }
+                activeIndices = [];
+                selectionMinIndex = -1;
+                insertionKeyIndex = -1;
+                updateDescription("🏆 모든 정렬의 정밀 과정이 완료되었습니다! 통계 수치를 읽고 생각해볼 질문들을 연구해봅시다.");
+                renderBars();
+                playCompleteFanfare();
+                return;
+            }
+
+            const state = stepResult.value;
+            currentArray = state.arr;
+
+            // Manage highlights
+            activeIndices = [];
+            selectionMinIndex = -1;
+            insertionKeyIndex = -1;
+
+            if (state.type === 'compare') {
+                activeIndices = state.indices;
+                comparisonCount++;
+                if (activeIndices.length > 0) {
+                    playTone(currentArray[activeIndices[0]], Math.max(...currentArray));
+                }
+            } else if (state.type === 'swap') {
+                activeIndices = state.indices;
+                swapCount++;
+                if (activeIndices.length > 0) {
+                    playTone(currentArray[activeIndices[0]], Math.max(...currentArray));
+                }
+            } else if (state.type === 'shift') {
+                activeIndices = state.indices || [state.index];
+                swapCount++; // Shifts / Moves counted alongside swaps in education
+                playTone(currentArray[state.index], Math.max(...currentArray));
+            } else if (state.type === 'insert') {
+                activeIndices = [state.index];
+                swapCount++;
+                playTone(currentArray[state.index], Math.max(...currentArray));
+            } else if (state.type === 'mark-min') {
+                selectionMinIndex = state.index;
+            } else if (state.type === 'new-min') {
+                selectionMinIndex = state.index;
+            } else if (state.type === 'pick-key') {
+                insertionKeyIndex = state.index;
+            } else if (state.type === 'sorted') {
+                sortedSet.add(state.index);
+            }
+
+            updateDescription(state.desc);
+            updateCounters();
+            renderBars();
+        }
+
+        // Toggle Continuous Play
+        function togglePlay() {
+            if (isPlaying) {
+                pauseSimulation();
+            } else {
+                startSimulation();
+            }
+        }
+
+        function startSimulation() {
+            isPlaying = true;
+            document.getElementById('play-btn-text').innerText = "일시정지";
+            const icon = document.getElementById('play-icon');
+            icon.setAttribute('data-lucide', 'pause');
+            lucide.createIcons();
+            
+            playInterval = setInterval(stepForward, speed);
+        }
+
+        function pauseSimulation() {
+            isPlaying = false;
+            document.getElementById('play-btn-text').innerText = "자동 실행";
+            const icon = document.getElementById('play-icon');
+            icon.setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+            
+            clearInterval(playInterval);
+        }
+
+        // Updates dynamic label values
+        function updateCounters() {
+            document.getElementById('stat-comparisons').innerText = comparisonCount;
+            document.getElementById('stat-swaps').innerText = swapCount;
+        }
+
+        function updateDescription(txt) {
+            document.getElementById('narrative-desc').innerText = txt;
+        }
+
+        // --- STREAMING_CHUNK:Rendering visual element bars in real-time ---
+        function renderBars() {
+            const container = document.getElementById('bars-container');
+            container.innerHTML = '';
+            
+            const maxVal = Math.max(...currentArray, 1);
+
+            currentArray.forEach((val, idx) => {
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'flex flex-col items-center flex-1 h-full justify-end';
+
+                // Core bar node
+                const bar = document.createElement('div');
+                
+                // Color mapping code logic
+                let colorClass = 'bg-indigo-500 hover:bg-indigo-400';
+                
+                if (activeIndices.includes(idx)) {
+                    colorClass = 'bg-rose-500 shadow-md shadow-rose-500/50 scale-105'; // active check
+                } else if (idx === selectionMinIndex) {
+                    colorClass = 'bg-amber-400 shadow-md shadow-amber-400/50 animate-pulse scale-105'; // Selection Min Pointer
+                } else if (idx === insertionKeyIndex) {
+                    colorClass = 'bg-amber-500 shadow-md shadow-amber-500/50 animate-pulse scale-105'; // Insertion Key Pointer
+                } else if (sortedSet.has(idx)) {
+                    colorClass = 'bg-emerald-500 shadow-sm shadow-emerald-500/20'; // sorted state
+                }
+
+                const heightPct = (val / maxVal) * 90; // Top margin padding
+                bar.className = `w-full rounded-t-md transition-all duration-150 ${colorClass}`;
+                bar.style.height = `${heightPct}%`;
+
+                // Display numerical values only for legible sizes (e.g., up to 25 items)
+                if (arraySize <= 25) {
+                    const label = document.createElement('span');
+                    label.className = 'text-[9px] sm:text-xs font-bold text-slate-300 mb-1';
+                    label.innerText = val;
+                    barWrapper.appendChild(label);
+                }
+
+                barWrapper.appendChild(bar);
+
+                // Grid axis indices labels
+                const axisLabel = document.createElement('span');
+                axisLabel.className = 'text-[8px] sm:text-[10px] text-slate-500 font-mono mt-1.5';
+                axisLabel.innerText = idx + 1;
+                barWrapper.appendChild(axisLabel);
+
+                container.appendChild(barWrapper);
+            });
+        }
+    </script>
+</body>
+</html>
